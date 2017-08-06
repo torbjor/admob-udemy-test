@@ -19,6 +19,8 @@ class GameViewController: UIViewController, GADBannerViewDelegate {
         super.viewDidLoad()
         initializeAds()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(deviceOrientationDidChange), name: Notification.Name.UIDeviceOrientationDidChange, object: nil)
+        
         if let view = self.view as! SKView? {
             // Load the SKScene from 'GameScene.sks'
             if let scene = SKScene(fileNamed: "GameScene") {
@@ -36,11 +38,39 @@ class GameViewController: UIViewController, GADBannerViewDelegate {
         }
     }
     
+    func deviceOrientationDidChange() {
+        if UIDeviceOrientationIsPortrait(UIDevice.current.orientation){
+            bannerView.adSize = kGADAdSizeSmartBannerPortrait
+        }
+        else {
+            bannerView.adSize = kGADAdSizeSmartBannerLandscape
+        }
+    }
+    
     func initializeAds() {
         bannerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bannerView)
+        bannerView.isHidden = true
         
-        bannerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        bannerView.delegate = self
+        
+        bannerView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        bannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        bannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        /* Admob test id from https://developers.google.com/admob/ios/banner */
+        bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        bannerView.rootViewController = self
+        bannerView.load(GADRequest())
+    }
+    
+    func adViewDidReceiveAd(_ bannerView: GADBannerView) {
+        bannerView.isHidden = false
+    }
+    
+    func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
+        bannerView.isHidden = false
+        print("Error: \(error.localizedDescription)")
     }
     
     override var shouldAutorotate: Bool {
