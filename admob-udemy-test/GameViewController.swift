@@ -9,11 +9,15 @@
 import UIKit
 import SpriteKit
 import GameplayKit
+import Firebase
 
-class GameViewController: UIViewController {
+class GameViewController: UIViewController, GADBannerViewDelegate {
+    
+    var bannerView = GADBannerView(adSize: kGADAdSizeSmartBannerLandscape)
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        initializeAds()
         
         if let view = self.view as! SKView? {
             // Load the SKScene from 'GameScene.sks'
@@ -31,14 +35,21 @@ class GameViewController: UIViewController {
             view.showsNodeCount = true
         }
     }
-
+    
+    func initializeAds() {
+        bannerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bannerView)
+        
+        bannerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    }
+    
     override var shouldAutorotate: Bool {
         return true
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {
-            return .allButUpsideDown
+            return .all
         } else {
             return .all
         }
