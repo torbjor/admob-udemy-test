@@ -20,6 +20,8 @@ class GameViewController: UIViewController, GADBannerViewDelegate {
         initializeAds()
         
         NotificationCenter.default.addObserver(self, selector: #selector(deviceOrientationDidChange), name: Notification.Name.UIDeviceOrientationDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(showBanner), name: Notification.Name("showBanner"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(hideBanner), name: Notification.Name("hideBanner"), object: nil)
         
         if let view = self.view as! SKView? {
             // Load the SKScene from 'GameScene.sks'
@@ -47,6 +49,15 @@ class GameViewController: UIViewController, GADBannerViewDelegate {
         }
     }
     
+    func showBanner() {
+        bannerView.isHidden = false
+    }
+    
+    
+    func hideBanner() {
+        bannerView.isHidden = true
+    }
+    
     func initializeAds() {
         bannerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bannerView)
@@ -65,11 +76,11 @@ class GameViewController: UIViewController, GADBannerViewDelegate {
     }
     
     func adViewDidReceiveAd(_ bannerView: GADBannerView) {
-        bannerView.isHidden = false
+        showBanner()
     }
     
     func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
-        bannerView.isHidden = false
+        hideBanner()
         print("Error: \(error.localizedDescription)")
     }
     
